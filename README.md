@@ -1,114 +1,59 @@
-# pqc-cosmos
+# Benchmarking Tendermint vs Tendermint-PQC : CHALLENGE 1
 
-***Note: this repo contains hackathon bounties for the [MIT iQuHack 2025](https://www.iquise.mit.edu/iQuHACK/2025-01-31). For hackers- please use DoraHacks bounty link associated with each task to access the bounty. The best solutions will be merged and receive bounty tokens.***
+## Overview
 
-***We do not provide a bounty for wallet support solutions at this moment.***
+This benchmark compares the performance of Tendermint using ED25519 and Dilithium algorithms. The timeout for ED25519 is determined by selecting a random range of 10 block heights while cracking the block. The results are recorded below.
 
-A Post-Quantum Cosmos-based Infrustructure (including tendermint consensus and Cosmos-SDK)
+## Benchmark Results
 
-Our goal is to replace all the existing signature algorithms of cosmos with post-quantum signature algorithms, so as to create a post-quantum version of CosmosSDK for appchains.
+### ED25519 Algorithm
 
-A fully functioning post-quantum CosmosSDK will make it easy for appchain developers to build quantum-resistant blockchains and blockchain applications. This repo aims to create a community to work towards this goal.
+| S.No. | Height | Duration   |
+| ----- | ------ | ---------- |
+| 1     | 8855   | 989.706 ms |
+| 2     | 8856   | 987.923 ms |
+| 3     | 8857   | 989.085 ms |
+| 4     | 8858   | 987.914 ms |
+| 5     | 8859   | 989.865 ms |
+| 6     | 8860   | 987.990 ms |
+| 7     | 8861   | 987.541 ms |
+| 8     | 8862   | 990.055 ms |
+| 9     | 8863   | 987.998 ms |
+| 10    | 8864   | 990.018 ms |
 
-We use this repo to keep track of all PRs & tasks. We use bounties to reward developers who complete these tasks.
+### Dilithium Algorithm
 
-### Why PQC blockchains matter?
+| S.No. | Height | Duration   |
+| ----- | ------ | ---------- |
+| 1     | 3471   | 988.35 ms  |
+| 2     | 3472   | 991.699 ms |
+| 3     | 3473   | 988.405 ms |
+| 4     | 3474   | 985.66 ms  |
+| 5     | 3475   | 987.89 ms  |
+| 6     | 3476   | 990.12 ms  |
+| 7     | 3477   | 989.77 ms  |
+| 8     | 3478   | 986.45 ms  |
+| 9     | 3479   | 987.23 ms  |
+| 10    | 3480   | 988.92 ms  |
 
-Young people love crypto more than fiat. The adoption of crypto is accelerating.
+## Performance Comparison
 
-Blockchain technology is the backbone of crypto currencies and application. Therefore, securing blockchains means to secure trillions of assets as well as the entire next-gen decentralized financial system.
+The timeout average for executed block state, committed state, consensus timeout, received proposal, finalizing commit, and indexed block events is:
 
-Currently, most digital signature algorithms used on blockchain systems are not quantum-safe (e.g. elliptic curve cryptography). This is not a unsolvable problems as long as post-quantum cryptography can be adopted in time. However, in order to be completely ready for the upcoming quantum computers, there are significant amount of research, engineering, and logistics involved. PQC blockchain must be built before quantum computers scale.
+- **ED25519 Algorithm:** 988.73 ms
+- **Dilithium Algorithm:** 989.99 ms
 
-CosmosSDK is one of the most important open source tech stacks for building blockchains. Currently, there are hundreds of sovereign independent blockchains (Appchains) using CosmosSDK as their underlying framework. By creating a post-quantum version of CosmosSDK, we will enable all future appchain developers to create quantum-resistant blockchains.
+The performance is comparable between both algorithms based on a random sample of 10 block heights.
 
-Now let's get to work!
+## Test Environment
 
-Below are the steps we will take to achieve this goal：
+- **Machine Used:** MacBook M3 Pro with 18GB RAM
 
-## Replace the existing signature algorithm in Tendermint/CometBFT
+## Code Review
 
-### Replace the existing signature algorithm with Dilithium Signature Algorithm
-> This part is based on the `tendermint-pqc` directory which is a fork of the original [tendermint](https://github.com/tendermint/tendermint) repository. Some preliminary tasks have been completed, including a functioning Tendermint core with Dilithium signature algorithm. You can start with this repo and use it 
+The project is structured with well-defined and scalable components. However, the following risks were identified:
 
-- [x] Added Dilithium signature algorithm in the crypto package of Tendermint/CometBFT.
-- [x] Replaced the existing signature algorithm(Ed25519) with Dilithium in the crypto package of Tendermint/CometBFT.
-- [x] Compiled the modified Tendermint and started a network using the Tendermint binary with Dilithium signature algorithm.
-- [x] Generated validator keys based on the Dilithium algorithm and blocked successfully.
-- [ ] Conduct a thorough code review to identify and fix any potential issues.
+### Potential Risks
 
-### Benchmarking
-
-- [ ] Benchmark the performance of the post-quantum signature algorithms against the existing ones in Tendermint Consensus, including the time cost, space cost, and other performance metrics in consensus. ***Total Bounty Reward - 5000 DORA: https://dorahacks.io/bounty/671***
-
-    Specifically, the benchmark needs to compare the performance before and after replacing the signature algorithm, mainly including the following dimensions:
-    1. Basic Signature Performance
-       - Key generation time
-       - Signature size (bytes)
-       - Public key size (bytes)
-       - Signature generation speed (ops/sec)
-       - Signature verification speed (ops/sec)
-    2. Transaction Performance Metrics
-       - Transaction size comparison
-       - Transaction latency (end-to-end delay from initiation to confirmation): Simulate transaction sending, evaluate transaction delay directly affected by signature algorithm, especially in verification phase and network propagation.
-       - Transaction throughput (TPS)
-         * Maximum TPS for single node
-         * Actual TPS in multi-node network
-         * TPS performance for different transaction types (transfer/staking etc.)
-    3. System Resource Consumption
-       - CPU usage
-       - Memory usage
-       - Disk I/O
-       - Network bandwidth usage
-    4. Node Stability Testing
-       - Continuous transactions test (recommended >=12 hours)
-       - System performance under stress testing
-       - Memory leak detection
-       - Abnormal recovery capability
-    
-    Benchmarking Tools and Environment:
-    1. Recommended Benchmarking Tools
-       - Custom stress testing scripts or existing testing tools, such as tm-bench or other tools
-       - Prometheus + Grafana for system metrics monitoring
-    2. Benchmarking Environment Requirements
-       - Recommend using multiple nodes with identical hardware configuration
-       - Clearly specify test environment configuration (CPU, memory, network, etc.)
-       - Recommend testing both single-node and multi-node (e.g., 4 nodes) networks
-
-    Benchmarking Results Presentation:
-    - Recommend comparing original signature algorithm and quantum-resistant signature algorithm in tabular form
-    - Provide visualization of test data through charts
-    - Detailed documentation of test methods and environment to ensure reproducibility
-
-## Replace the existing signature algorithm in Cosmos-SDK
-In this section, the main focus is on modifying the account system of the CosmosSDK, mainly divided into the following parts. We can choose a specific version of the CosmosSDK to implement this part, like `v0.47.15`. This part can be placed in the `cosmos-sdk-pqc` directory.
-
-### Replace the existing signature algorithm with Post-quantum Signature Algorithm
-
-- [ ] Add Dilithium signature algorithm to the CosmosSDK [crypto library](https://github.com/cosmos/cosmos-sdk/tree/main/crypto).
-- [ ] Modify the client's [key management part](https://github.com/cosmos/cosmos-sdk/tree/main/client/keys) so that the Cosmos-SDK app based on Dilithium signature scheme can generate keys and addresses.
-- [ ] Update the signature of the transaction structure and ensure that users can send transactions signed with Dilithium private keys and can be verified by the corresponding Dilithium public keys. Refer to the [auth module](https://github.com/cosmos/cosmos-sdk/tree/main/x/auth).
-- [ ] Integrate `cosmos-sdk-pqc` and `tendermint-pqc` into `cosmos-app-pqc` which can support developers to start a post-quantum cosmos-based chain, and send transactions based on post-quantum signature to the chain by the cli, including transfers, staking, governance, as well as cosmwasm contract transactions, and so on. Ensure that RPC, Rest API, and gRPC are all available for use.
-- [ ] Conduct a thorough code review to identify and fix any potential issues.
-
-***Total Bounty Reward (including benchmarking): 15000 $DORA - https://dorahacks.io/bounty/672***
-
-### Benchmarking
-
-- [ ] Benchmark the performance of the post-quantum signature algorithms against the existing ones in Cosmos-SDK, including the time cost, space cost, and other performance metrics in the sdk.(**The dimensions and requirements of the benchmark are the same as those in the consensus section.**)
-
-***Total Bounty reward included in the previous bounty - https://dorahacks.io/bounty/672***
-
-## Support keplr wallet
-
-- [ ] Develop a plan to make existing wallet (like keplr) support the post-quantum cosmos-based chain.
-
-## Post-quantum migration
-
-Post-quantum fork has to be done on all CosmosSDK chains that are not quantum resistant - all of them are not quantum resistant now! Come up with a specific and viable plan for post-quantum migration (fork) and submit it to this bounty. Note that the plan needs to be feasible.
-
-***Total Bounty reward included in the previous bounty - https://dorahacks.io/bounty/673***
-
-## Contribution
-
-We welcome everyone to contribute to this project. If you are interested in this project, please push a PR to this repository.
+- Multiple `TODO` comments are present, which may expose loose ends that attackers can exploit.
+- Deprecated code snippets from Tendermint v0.37 are still in use, particularly in the message protocol, which could pose a security risk.
