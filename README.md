@@ -41,6 +41,45 @@ Below are the steps we will take to achieve this goal：
 
 - [ ] Benchmark the performance of the post-quantum signature algorithms against the existing ones in Tendermint Consensus, including the time cost, space cost, and other performance metrics in consensus. ***Total Bounty Reward - 5000 DORA: https://dorahacks.io/bounty/671***
 
+    Specifically, the benchmark needs to compare the performance before and after replacing the signature algorithm, mainly including the following dimensions:
+    1. Basic Signature Performance
+       - Key generation time
+       - Signature size (bytes)
+       - Public key size (bytes)
+       - Signature generation speed (ops/sec)
+       - Signature verification speed (ops/sec)
+    2. Transaction Performance Metrics
+       - Transaction size comparison
+       - Transaction latency (end-to-end delay from initiation to confirmation): Simulate transaction sending, evaluate transaction delay directly affected by signature algorithm, especially in verification phase and network propagation.
+       - Transaction throughput (TPS)
+         * Maximum TPS for single node
+         * Actual TPS in multi-node network
+         * TPS performance for different transaction types (transfer/staking etc.)
+    3. System Resource Consumption
+       - CPU usage
+       - Memory usage
+       - Disk I/O
+       - Network bandwidth usage
+    4. Node Stability Testing
+       - Continuous transactions test (recommended >=12 hours)
+       - System performance under stress testing
+       - Memory leak detection
+       - Abnormal recovery capability
+    
+    Benchmarking Tools and Environment:
+    1. Recommended Benchmarking Tools
+       - Custom stress testing scripts or existing testing tools, such as tm-bench or other tools
+       - Prometheus + Grafana for system metrics monitoring
+    2. Benchmarking Environment Requirements
+       - Recommend using multiple nodes with identical hardware configuration
+       - Clearly specify test environment configuration (CPU, memory, network, etc.)
+       - Recommend testing both single-node and multi-node (e.g., 4 nodes) networks
+
+    Benchmarking Results Presentation:
+    - Recommend comparing original signature algorithm and quantum-resistant signature algorithm in tabular form
+    - Provide visualization of test data through charts
+    - Detailed documentation of test methods and environment to ensure reproducibility
+
 ## Replace the existing signature algorithm in Cosmos-SDK
 In this section, the main focus is on modifying the account system of the CosmosSDK, mainly divided into the following parts. We can choose a specific version of the CosmosSDK to implement this part, like `v0.47.15`. This part can be placed in the `cosmos-sdk-pqc` directory.
 
@@ -56,7 +95,7 @@ In this section, the main focus is on modifying the account system of the Cosmos
 
 ### Benchmarking
 
-- [ ] Benchmark the performance of the post-quantum signature algorithms against the existing ones in Cosmos-SDK, including the time cost, space cost, and other performance metrics in the sdk.
+- [ ] Benchmark the performance of the post-quantum signature algorithms against the existing ones in Cosmos-SDK, including the time cost, space cost, and other performance metrics in the sdk.(**The dimensions and requirements of the benchmark are the same as those in the consensus section.**)
 
 ***Total Bounty reward included in the previous bounty - https://dorahacks.io/bounty/672***
 
