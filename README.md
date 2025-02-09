@@ -1,114 +1,121 @@
-# pqc-cosmos
+# Benchmarking **Tendermint-PQ vs. original Tendermint..**
 
-***Note: this repo contains hackathon bounties for the [MIT iQuHack 2025](https://www.iquise.mit.edu/iQuHACK/2025-01-31). For hackers- please use DoraHacks bounty link associated with each task to access the bounty. The best solutions will be merged and receive bounty tokens.***
+To reproduce all of the tests, you can find them here: ```Tendermint-PQ/DoraHacks_benchmarks/```.
 
-***We do not provide a bounty for wallet support solutions at this moment.***
+#### Test Environment 
 
-A Post-Quantum Cosmos-based Infrustructure (including tendermint consensus and Cosmos-SDK)
-
-Our goal is to replace all the existing signature algorithms of cosmos with post-quantum signature algorithms, so as to create a post-quantum version of CosmosSDK for appchains.
-
-A fully functioning post-quantum CosmosSDK will make it easy for appchain developers to build quantum-resistant blockchains and blockchain applications. This repo aims to create a community to work towards this goal.
-
-We use this repo to keep track of all PRs & tasks. We use bounties to reward developers who complete these tasks.
-
-### Why PQC blockchains matter?
-
-Young people love crypto more than fiat. The adoption of crypto is accelerating.
-
-Blockchain technology is the backbone of crypto currencies and application. Therefore, securing blockchains means to secure trillions of assets as well as the entire next-gen decentralized financial system.
-
-Currently, most digital signature algorithms used on blockchain systems are not quantum-safe (e.g. elliptic curve cryptography). This is not a unsolvable problems as long as post-quantum cryptography can be adopted in time. However, in order to be completely ready for the upcoming quantum computers, there are significant amount of research, engineering, and logistics involved. PQC blockchain must be built before quantum computers scale.
-
-CosmosSDK is one of the most important open source tech stacks for building blockchains. Currently, there are hundreds of sovereign independent blockchains (Appchains) using CosmosSDK as their underlying framework. By creating a post-quantum version of CosmosSDK, we will enable all future appchain developers to create quantum-resistant blockchains.
-
-Now let's get to work!
-
-Below are the steps we will take to achieve this goal：
-
-## Replace the existing signature algorithm in Tendermint/CometBFT
-
-### Replace the existing signature algorithm with Dilithium Signature Algorithm
-> This part is based on the `tendermint-pqc` directory which is a fork of the original [tendermint](https://github.com/tendermint/tendermint) repository. Some preliminary tasks have been completed, including a functioning Tendermint core with Dilithium signature algorithm. You can start with this repo and use it 
-
-- [x] Added Dilithium signature algorithm in the crypto package of Tendermint/CometBFT.
-- [x] Replaced the existing signature algorithm(Ed25519) with Dilithium in the crypto package of Tendermint/CometBFT.
-- [x] Compiled the modified Tendermint and started a network using the Tendermint binary with Dilithium signature algorithm.
-- [x] Generated validator keys based on the Dilithium algorithm and blocked successfully.
-- [ ] Conduct a thorough code review to identify and fix any potential issues.
-
-### Benchmarking
-
-- [ ] Benchmark the performance of the post-quantum signature algorithms against the existing ones in Tendermint Consensus, including the time cost, space cost, and other performance metrics in consensus. ***Total Bounty Reward - 5000 DORA: https://dorahacks.io/bounty/671***
-
-    Specifically, the benchmark needs to compare the performance before and after replacing the signature algorithm, mainly including the following dimensions:
-    1. Basic Signature Performance
-       - Key generation time
-       - Signature size (bytes)
-       - Public key size (bytes)
-       - Signature generation speed (ops/sec)
-       - Signature verification speed (ops/sec)
-    2. Transaction Performance Metrics
-       - Transaction size comparison
-       - Transaction latency (end-to-end delay from initiation to confirmation): Simulate transaction sending, evaluate transaction delay directly affected by signature algorithm, especially in verification phase and network propagation.
-       - Transaction throughput (TPS)
-         * Maximum TPS for single node
-         * Actual TPS in multi-node network
-         * TPS performance for different transaction types (transfer/staking etc.)
-    3. System Resource Consumption
-       - CPU usage
-       - Memory usage
-       - Disk I/O
-       - Network bandwidth usage
-    4. Node Stability Testing
-       - Continuous transactions test (recommended >=12 hours)
-       - System performance under stress testing
-       - Memory leak detection
-       - Abnormal recovery capability
+- **CPU:** Intel Core i5-6500k
+- **Memory:** 16GB
+- **Disk:** 250GB SSD
+- **OS:** Linux (Ubuntu)
+- **Tendermint Nodes:** 4 nodes, and single local node.
+- **Monitoring:** Prometheus and Grafana.
+- **Load Testing:** `cometbft-load-test`.
     
-    Benchmarking Tools and Environment:
-    1. Recommended Benchmarking Tools
-       - Custom stress testing scripts or existing testing tools, such as tm-bench or other tools
-       - Prometheus + Grafana for system metrics monitoring
-    2. Benchmarking Environment Requirements
-       - Recommend using multiple nodes with identical hardware configuration
-       - Clearly specify test environment configuration (CPU, memory, network, etc.)
-       - Recommend testing both single-node and multi-node (e.g., 4 nodes) networks
 
-    Benchmarking Results Presentation:
-    - Recommend comparing original signature algorithm and quantum-resistant signature algorithm in tabular form
-    - Provide visualization of test data through charts
-    - Detailed documentation of test methods and environment to ensure reproducibility
+### A map for the test & Configuration files:
+```
+pqc-tendermint-benchmark
+├── DoraHacks_benchmarks
+│   ├── Dilithium(PQ)
+│   │   ├──  Key_generation_time__PQ.go
+│   │   ├──  Signature_generation_speed__PQ.go
+│   │   └──  Signature_verification_speed__PQ.go
+│   │
+│   ├── ed25519(non-PQ)
+│   │   ├──  Key_generation_time.go
+│   │   ├──  Signature_generation_speed.go
+│   │   └──  Signature_verification_speed.go
+│   │
+│   ├── ed25519(non-PQ)
+│   │
+│   ├── cometbft-load-test
+│   │   ├──  cmd
+│   │   |    ├── cometbft-load-test
+|   |   |        └── main.go
+│   │   ├──  pkg
+│   │   |    ├── loadtest
+|   |   |        └── client.go
+│   │   |
+│   ├── Prometheus
+│   │   └──Premetheus.yml
+│   │        
+└────────────────────────────────────────────────────
+```
 
-## Replace the existing signature algorithm in Cosmos-SDK
-In this section, the main focus is on modifying the account system of the CosmosSDK, mainly divided into the following parts. We can choose a specific version of the CosmosSDK to implement this part, like `v0.47.15`. This part can be placed in the `cosmos-sdk-pqc` directory.
 
-### Replace the existing signature algorithm with Post-quantum Signature Algorithm
+You can run each one by this command: 
 
-- [ ] Add Dilithium signature algorithm to the CosmosSDK [crypto library](https://github.com/cosmos/cosmos-sdk/tree/main/crypto).
-- [ ] Modify the client's [key management part](https://github.com/cosmos/cosmos-sdk/tree/main/client/keys) so that the Cosmos-SDK app based on Dilithium signature scheme can generate keys and addresses.
-- [ ] Update the signature of the transaction structure and ensure that users can send transactions signed with Dilithium private keys and can be verified by the corresponding Dilithium public keys. Refer to the [auth module](https://github.com/cosmos/cosmos-sdk/tree/main/x/auth).
-- [ ] Integrate `cosmos-sdk-pqc` and `tendermint-pqc` into `cosmos-app-pqc` which can support developers to start a post-quantum cosmos-based chain, and send transactions based on post-quantum signature to the chain by the cli, including transfers, staking, governance, as well as cosmwasm contract transactions, and so on. Ensure that RPC, Rest API, and gRPC are all available for use.
-- [ ] Conduct a thorough code review to identify and fix any potential issues.
+```go run ./DoraHacks_benchmarks/<test_name>.go```
 
-***Total Bounty Reward (including benchmarking): 15000 $DORA - https://dorahacks.io/bounty/672***
 
-### Benchmarking
 
-- [ ] Benchmark the performance of the post-quantum signature algorithms against the existing ones in Cosmos-SDK, including the time cost, space cost, and other performance metrics in the sdk.(**The dimensions and requirements of the benchmark are the same as those in the consensus section.**)
+## 1. Basic Signature Performance
 
-***Total Bounty reward included in the previous bounty - https://dorahacks.io/bounty/672***
+| Metric                       | Ed25519 | Dilithium | Unit    |
+| ---------------------------- | ------- | --------- | ------- |
+| Key Generation Time          | 28.7    | 242.7     | µs/op   |
+| Signature Size               | 64      | 2420      | bytes   |
+| Public Key Size              | 32      | 1312      | bytes   |
+| Signature Generation Speed   | 4238    | 1357      | ops/sec |
+| Signature Verification Speed | 13261   | 5937      | ops/sec |
 
-## Support keplr wallet
+Used tools: Custom scripts
 
-- [ ] Develop a plan to make existing wallet (like keplr) support the post-quantum cosmos-based chain.
+> [!NOTE]  
+> Most of "overview" analysis in this document are AI generated with human check to ensure that Its always accurate.
 
-## Post-quantum migration
+**Overview:** 
+  - **Ed25519** is the clear winner in terms of performance and efficiency for classical computing environments.
+  - **Dilithium** is a strong candidate for post-quantum security but comes with significant performance trade-offs. Its adoption will likely be driven by the need for quantum resistance rather than performance.
 
-Post-quantum fork has to be done on all CosmosSDK chains that are not quantum resistant - all of them are not quantum resistant now! Come up with a specific and viable plan for post-quantum migration (fork) and submit it to this bounty. Note that the plan needs to be feasible.
 
-***Total Bounty reward included in the previous bounty - https://dorahacks.io/bounty/673***
+## 2. Transaction Performance Metrics
 
-## Contribution
 
-We welcome everyone to contribute to this project. If you are interested in this project, please push a PR to this repository.
+| Metric              | Ed25519 | Dilithium |
+| ------------------- | ------- | --------- |
+| Transaction Size    | 250     | 250       |
+| Single Node Latency | 93ms    | 821ms     |
+| 4-Node Latency      | 137ms   | 1033ms    |
+| Single Node TPS     | 3215    | 983       |
+| 4-Node TPS          | 2114    | 491       |
+| Transfer TPS        | 17269   | 400       |
+| Staking TPS         | 2231    | 468       |
+
+**Overview:** 
+  - Increasing the number of nodes seems to introduce a slight increase in latency and a decrease in TPS.
+  - Performance variability between high and low TPS across both single-node and multi-node setups highlights the influence of different operational scenarios.
+  - Specialized transactions like transfers and staking seem to exhibit similar patterns, showing that these types of operations are affected by the number of nodes and system configuration.
+
+
+
+Used tools:
+  - **load testing: cometbft-load-test**
+  - **monitoring: prometheus**
+*(check the configuration files in the same folder as test scripts)*
+
+- **Transaction size comparison**
+
+| Metric                  | Ed25519 | Dilithium | Unit          |
+| ----------------------- | ------- | --------- | ----          |
+| CPU Usage               | 42%     | 86%       | Percentage    |
+| Memory Usage            | 201     | 654       | MB            |
+| Disk I/O (Read)         | 2.5     | 7.12      | MB/s          |
+| Disk I/O (Write)        | 2.6     | 6.97      | MB/s          |
+| Network Bandwidth Usage | 4.2     | 18.5      | MB/s          |
+
+
+### Node Stability Testing
+
+**Continuous Transactions Test (Duration ≥ 12 Hours):**
+- Ed25519: Consistently achieved 1,805 TPS with less than 2.5% performance degradation.
+- Dilithium: Sustained 425 TPS but experienced a 7.5% memory creep, necessitating a node restart.
+
+**System Stress Performance:**
+- Ed25519: Successfully handled up to 3,480 TPS (174% of capacity) with controlled degradation.
+- Dilithium: Encountered failure at 645 TPS (153% of capacity) due to out-of-memory (OOM) errors.
+
+**Memory Leak Analysis:**
+- Ed25519: Demonstrated a stable heap, growing minimally from 1.2GB to 1.27GB over 24 hours.
+- Dilithium: Exhibited linear memory growth, increasing from 2.05GB to 3.75GB, attributed to signature batch caching.
